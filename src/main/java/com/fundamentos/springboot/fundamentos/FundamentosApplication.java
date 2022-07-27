@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,16 +54,30 @@ public class FundamentosApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-//		ejemplosAnteriores();
+		/* ejemplosAnteriores(); */
 		saveUsersInDataBase();
+		getInformationJpqlFromUserName();
 	}
+
+	private void getInformationJpqlFromUserName () {
+		LOGGER.info("User encontrado con findByUserName " + userRepository.findByUserName("Jhon").orElseThrow(
+				() -> new RuntimeException("No se encontro el usuario.")
+		));
+
+		userRepository.findAndSort("Mat", Sort.by("idUser").ascending())
+			.stream()
+			.forEach(user -> LOGGER.info("Usuario con metodo sort " + user));
+	}
+
 
 	private void saveUsersInDataBase(){
 		User user1 = new User("Jhon", "Pastrana");
 		User user2 = new User("Charly", "Giulian");
 		User user3 = new User("Mate", "Williams");
+		User user4 = new User("Mateo", "Mirland");
+		User user5 = new User("Maitena", "Sarapo");
 
-		List <User> userList = Arrays.asList(user1, user2, user3);
+		List <User> userList = Arrays.asList(user1, user2, user3, user4, user5);
 
 		/* Usamos el repositorio para hacer persistir esta informacion */
 		userList.stream().forEach(userRepository::save);

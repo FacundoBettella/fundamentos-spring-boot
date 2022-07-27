@@ -75,6 +75,24 @@ public class FundamentosApplication implements CommandLineRunner {
 		LOGGER.info("Usuario con query method " + userRepository.findByUserNameAndUserLastName("Frank", "Ferdinand")
 				.orElseThrow(() -> new RuntimeException("No se encontro el usuario.")
 		));
+
+		LOGGER.info("Usuario con query method LIKE " + userRepository.findByUserNameLike("%bert%")
+				.orElseThrow(() -> new RuntimeException("No se encontro el usuario.")
+		));
+
+		LOGGER.info("Usuario con query method OR " + userRepository.findByUserNameOrUserLastName(null, "Giulian")
+				.orElseThrow(() -> new RuntimeException("No se encontro el usuario.")));
+
+		userRepository.findByUserNameLikeOrderByIdUserDesc("%Ma%")
+				.stream()
+				.forEach(user -> LOGGER.info("Usuario encontrado con username like order by user id  " + user));
+
+		userRepository.findByUserNameContainingOrderByIdUserAsc("Ma")
+				.stream()
+				.forEach(user -> LOGGER.info("Usuario encontrado con username like order by user id  " + user));
+
+		LOGGER.info("Usuario encontrado a partir de Named Parameter:  " + userRepository.getAllByUserNameAndLastName("Oscar", "Fernandez")
+				.orElseThrow(() -> new RuntimeException("No se encontro el usuario.")));
 	}
 
 
@@ -85,8 +103,10 @@ public class FundamentosApplication implements CommandLineRunner {
 		User user4 = new User("Mateo", "Mirland");
 		User user5 = new User("Maitena", "Sarapo");
 		User user6 = new User("Frank", "Ferdinand");
+		User user7 = new User("Oscar", "Fernandez");
+		User user8 = new User("Alberto", "Spinetta");
 
-		List <User> userList = Arrays.asList(user1, user2, user3, user4, user5, user6);
+		List <User> userList = Arrays.asList(user1, user2, user3, user4, user5, user6, user7, user8);
 
 		/* Usamos el repositorio para hacer persistir esta informacion */
 		userList.stream().forEach(userRepository::save);

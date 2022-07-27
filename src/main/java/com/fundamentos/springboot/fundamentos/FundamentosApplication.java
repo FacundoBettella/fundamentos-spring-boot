@@ -60,13 +60,21 @@ public class FundamentosApplication implements CommandLineRunner {
 	}
 
 	private void getInformationJpqlFromUserName () {
-		LOGGER.info("User encontrado con findByUserName " + userRepository.findByUserName("Jhon").orElseThrow(
-				() -> new RuntimeException("No se encontro el usuario.")
+		LOGGER.info("User encontrado con notacion @Query y JPQL" + userRepository.findByName("Jhon")
+				.orElseThrow(() -> new RuntimeException("No se encontro el usuario.")
 		));
 
 		userRepository.findAndSort("Mat", Sort.by("idUser").ascending())
 			.stream()
 			.forEach(user -> LOGGER.info("Usuario con metodo sort " + user));
+
+		userRepository.findByUserLastName("Pastrana")
+				.stream()
+				.forEach(user -> LOGGER.info("Usuario con query method " + user));
+
+		LOGGER.info("Usuario con query method " + userRepository.findByUserNameAndUserLastName("Frank", "Ferdinand")
+				.orElseThrow(() -> new RuntimeException("No se encontro el usuario.")
+		));
 	}
 
 
@@ -76,8 +84,9 @@ public class FundamentosApplication implements CommandLineRunner {
 		User user3 = new User("Mate", "Williams");
 		User user4 = new User("Mateo", "Mirland");
 		User user5 = new User("Maitena", "Sarapo");
+		User user6 = new User("Frank", "Ferdinand");
 
-		List <User> userList = Arrays.asList(user1, user2, user3, user4, user5);
+		List <User> userList = Arrays.asList(user1, user2, user3, user4, user5, user6);
 
 		/* Usamos el repositorio para hacer persistir esta informacion */
 		userList.stream().forEach(userRepository::save);

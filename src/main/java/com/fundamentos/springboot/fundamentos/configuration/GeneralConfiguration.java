@@ -9,10 +9,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 import javax.sql.DataSource;
 
 @Configuration
+/* Puedo acceder al archivo de properties */
+@PropertySource("classpath:connection.properties")
 @EnableConfigurationProperties(UserPojo.class) /* Habilitamos la class UserPojo. Ahora podemos inyectarla como dependencia */
 
 public class GeneralConfiguration {
@@ -25,6 +28,18 @@ public class GeneralConfiguration {
     @Value("${value.random}")
     private String randomValue;
 
+    @Value("${jdbc.url}")
+    private String jdbcURL;
+
+    @Value("${driver}")
+    private String hTWODriver;
+
+    @Value("${username}")
+    private String username;
+
+    @Value("${password}")
+    private String password;
+
     @Bean
     public MyBeanWithProperties function(){
         return new MyBeanWithPropertiesImplement(nombre, apellido);
@@ -35,10 +50,10 @@ public class GeneralConfiguration {
     public DataSource datasource(){
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
 
-        dataSourceBuilder.driverClassName("org.h2.Driver");
-        dataSourceBuilder.url("jdbc:h2:mem:springbootfundamentosdb");
-        dataSourceBuilder.username("facu");
-        dataSourceBuilder.password("");
+        dataSourceBuilder.driverClassName(hTWODriver);
+        dataSourceBuilder.url(jdbcURL);
+        dataSourceBuilder.username(username);
+        dataSourceBuilder.password(password);
         return dataSourceBuilder.build();
     }
 

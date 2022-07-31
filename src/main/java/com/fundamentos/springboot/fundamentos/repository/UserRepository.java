@@ -5,6 +5,7 @@ import com.fundamentos.springboot.fundamentos.entity.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
     /* Con JPQL trabajamos con objetos, no con tablas o columnas */
     @Query("Select u FROM User u WHERE u.userName=?1 ")
@@ -44,4 +45,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional <UserDto> getAllByUserNameAndLastName(@Param("parametroName") String name,
                                                    @Param("parametroLastName") String lastName);
 
+    List<User> findAll(); /* PagingAndSortingRepository extends */
 }

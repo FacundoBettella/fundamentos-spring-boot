@@ -1,6 +1,7 @@
 package com.fundamentos.springboot.fundamentos.configuration;
 
 import com.fundamentos.springboot.fundamentos.caseuse.*;
+import com.fundamentos.springboot.fundamentos.repository.UserRepository;
 import com.fundamentos.springboot.fundamentos.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,11 @@ public class CaseUseConfiguration {
     @Bean
     GetUser getUser(UserService userService){
         return new GetUserImplement(userService);
+    }
+
+    @Bean
+    GetPageableUsers getPageableUsers(UserService userService) {
+        return new GetPageableUsers(userService);
     }
 
     @Bean

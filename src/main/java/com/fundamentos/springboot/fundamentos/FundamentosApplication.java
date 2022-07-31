@@ -8,6 +8,7 @@ import com.fundamentos.springboot.fundamentos.component.ComponentDependency;
 import com.fundamentos.springboot.fundamentos.entity.User;
 import com.fundamentos.springboot.fundamentos.pojo.UserPojo;
 import com.fundamentos.springboot.fundamentos.repository.UserRepository;
+import com.fundamentos.springboot.fundamentos.service.UserService;
 import org.apache.juli.logging.Log;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.domain.Sort;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,16 +37,18 @@ public class FundamentosApplication implements CommandLineRunner {
 	private MyBeanWithProperties myBeanWithProperties;
 	private UserPojo userPojo;
 	private UserRepository userRepository;
+	private UserService userService;
 
 	/*Constructor*/
 	@Autowired
-	public FundamentosApplication(@Qualifier("componentTwoImplement") ComponentDependency componentDependency, MyBean myBean, MyBeanWithDependency myBeanWithDependency, MyBeanWithProperties myBeanWithProperties, UserPojo userPojo, UserRepository userRepository){
+	public FundamentosApplication(@Qualifier("componentTwoImplement") ComponentDependency componentDependency, MyBean myBean, MyBeanWithDependency myBeanWithDependency, MyBeanWithProperties myBeanWithProperties, UserPojo userPojo, UserRepository userRepository, UserService userService){
 		this.componentDependency = componentDependency;
 		this.myBean = myBean;
 		this.myBeanWithDependency = myBeanWithDependency;
 		this.myBeanWithProperties = myBeanWithProperties;
 		this.userPojo = userPojo;
 		this.userRepository = userRepository;
+		this.userService = userService;
 	}
 
 
@@ -56,7 +60,27 @@ public class FundamentosApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		/* ejemplosAnteriores(); */
 		saveUsersInDataBase();
-		getInformationJpqlFromUserName();
+		/* getInformationJpqlFromUserName(); */
+		saveWithErrorTransactional();
+	};
+
+	private void saveWithErrorTransactional(){
+		User test1 = new User("TestTransactional1", "TestTransactional1");
+		User test2 = new User("TestTransactional2", "TestTransactional2");
+		/* Generamos el error */
+		User test3 = new User("TestTransactional1", "TestTransactional3");
+
+		List <User> testUserList = Arrays.asList(test1, test2, test3);
+
+		try {
+			userService.saveTransactional(testUserList);
+			userService.getAllUsers()
+					.stream()
+					.forEach(user -> LOGGER.info("Usuario registrado con método transaccional: " + user));
+		}catch (Exception e){
+			LOGGER.error("Esta es una exception por error de registración y rollback por transacctional-service: " + e);
+		}
+
 	}
 
 	private void getInformationJpqlFromUserName () {
@@ -93,6 +117,7 @@ public class FundamentosApplication implements CommandLineRunner {
 
 		LOGGER.info("Usuario encontrado a partir de Named Parameter:  " + userRepository.getAllByUserNameAndLastName("Oscar", "Fernandez")
 				.orElseThrow(() -> new RuntimeException("No se encontro el usuario.")));
+
 	}
 
 
@@ -109,7 +134,9 @@ public class FundamentosApplication implements CommandLineRunner {
 		List <User> userList = Arrays.asList(user1, user2, user3, user4, user5, user6, user7, user8);
 
 		/* Usamos el repositorio para hacer persistir esta informacion */
-		userList.stream().forEach(userRepository::save);
+		userList.stream()
+				.peek(user -> LOGGER.info("Usuario registrado con método save " + user))
+				.forEach(userRepository::save);
 	}
 
 	private void ejemplosAnteriores() {

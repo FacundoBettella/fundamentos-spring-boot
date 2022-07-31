@@ -1,5 +1,7 @@
 package com.fundamentos.springboot.fundamentos.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 
 @Entity
@@ -17,6 +19,7 @@ public class Post {
     private String description;
 
     /* Creamos relacion con la entidad usuario */
+    @JsonBackReference /* Para solventar  Infinite Recursion Problem */
     @ManyToOne
     private User user;
 

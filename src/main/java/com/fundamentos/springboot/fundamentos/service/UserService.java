@@ -4,6 +4,7 @@ import com.fundamentos.springboot.fundamentos.entity.User;
 import com.fundamentos.springboot.fundamentos.repository.UserRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -46,5 +47,24 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public User save(User newUser) {
+        return userRepository.save(newUser);
+    }
+
+    public void delete(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    public User update(User userToUpdate, Long id) {
+        return userRepository.findById(id)
+                .map(
+                        user -> {
+                            user.setUserName(userToUpdate.getUserName());
+                            user.setUserLastName(userToUpdate.getUserLastName());
+                            return userRepository.save(user);
+                        }
+                ).orElse(null);
     }
 }
